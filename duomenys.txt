@@ -1,0 +1,15 @@
+Jonas 8 7 9 10
+Rasa 10 9 8 10
+Mantas 6 7 5 6
+Greta 9 9 10 8
+Tomas 5 6 7 6
+Egle 10 10 9 10
+Lukas 7 8 6 7
+Aiste 9 8 9 9
+Dovydas 6 5 7 6
+Karolis 8 7 8 7
+Monika 10 9 10 10
+Paulius 7 6 8 7
+Simona 9 10 9 10
+Andrius 5 6 5 6
+Viktorija 10 10 10 10
