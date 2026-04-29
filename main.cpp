@@ -1,16 +1,17 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <vector>
 
 using namespace std;
 
 struct student{
     string name;
-    int grade[4];
+    vector<int> grade;
 };
 
-double grade_Average(int grade[4]);
-int findBestStudent(student s[],int n); //finds the index
+double grade_Average(const vector<int>& grade);
+int findBestStudent(const vector<student>& s); //finds the index
 
 int main()
 {
@@ -19,8 +20,9 @@ int main()
     input.open("C:\\dev\\cpp_Projects\\Student_Grade_Analyzer\\duomenys.txt");
     output.open("Output_data.txt");
 
-    student s[100];
-    int n = 0;
+    vector<student> s;
+    int gradeCount; // first number after the name indicates the grade count (inside the input file)
+    student temp;
 
     if(input.fail())
     {
@@ -29,39 +31,49 @@ int main()
     }
     else
     {
-        while(n < 100 && input >> s[n].name)
+        while(input >> temp.name >> gradeCount)
         {
-            for(int i = 0; i < 4; i++)
+            temp.grade.clear();
+            for(int i = 0; i < gradeCount; i++)
             {
-                if(!(input >> s[n].grade[i]))
-                {
-                    output << "The input file is not correct. Ensure that only 4 grades are entered per student. Missing or Invalid grade for student: " << s[n].name << endl;
-                    return 0;
-                }
+                int g;
+                input >> g;
+                temp.grade.push_back(g);
             }
-            n++;
-        }
-        if( n == 0)
-        {
-            output << "No student data found." << endl;
-            return 0;
+            s.push_back(temp);
         }
             output << fixed << setprecision(2);
-            for(int i = 0; i < n; i++)
+
+            for(int i = 0; i < s.size(); i++)
             {
                 output << s[i].name << " ";
 
-                for(int j = 0; j < 4; j++)
+                for(int j = 0; j < s[i].grade.size(); j++)
                 {
                     output << s[i].grade[j] << " ";
                 }
-                output << "| Avg: " << grade_Average(s[i].grade) << endl;
+                double avg = grade_Average(s[i].grade);
+                if(avg == -1)
+                {
+                    output << "The student has no grades. Please review the input file." << endl;
+                }
+                else
+                {
+                    output << "| Avg: " << avg << endl;
+                }
             }
 
-        int bestStudent = findBestStudent(s,n);
-        double maxAverage = grade_Average(s[bestStudent].grade);
+        int bestStudent = findBestStudent(s);
+        if (bestStudent == -2)
+        {
+            output << "There are no student data." << endl;
+        }
+        else
+        {
+            double maxAverage = grade_Average(s[bestStudent].grade);
 
-        output << "\nBest student is " << s[bestStudent].name << ". Grade average: " << maxAverage << endl;
+            output << "\nBest student is " << s[bestStudent].name << ". Grade average: " << maxAverage << endl;
+        }
     }
 
     input.close();
@@ -69,20 +81,28 @@ int main()
     return 0;
 }
 
-double grade_Average(int grade[4])
+double grade_Average(const vector<int>& grade)
 {
+    if(grade.empty())
+    {
+        return -1;
+    }
     double sum = 0;
-    for (int i = 0;i < 4; i++)
+    for (int i = 0;i < grade.size(); i++)
     {
         sum += grade[i];
     }
-    return sum / 4;
+    return sum / grade.size();
 }
-int findBestStudent(student s[],int n)
+int findBestStudent(const vector<student>& s)
 {
+    if(s.empty())
+    {
+        return -2;
+    }
     double maxAverage = grade_Average(s[0].grade);
     int bestIndex = 0;
-    for(int i = 1; i < n; i++)
+    for(int i = 1; i < s.size(); i++)
     {
         double currentAverage = grade_Average(s[i].grade);
         if(currentAverage > maxAverage)
